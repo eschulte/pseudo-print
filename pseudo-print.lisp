@@ -6,7 +6,16 @@
 
 ;;; Commentary
 
-;; The `pseudo-print' function prints lisp code as pseudo code.
+;; Use `with-pseudo-printer' to print lisp code as pseudo code using
+;; the normal printing facilities.  E.g.,
+;;
+;; > (with-pseudo-pprinter (format t "~W" '(if (> x 0) (+ 1 2 3) 3/4)))
+;;
+;; If (X > 0) Then
+;;   (1 + 2 + 3)
+;; Else
+;;   3/4
+;; EndIf
 
 ;;; Code:
 (in-package :pseudo-print)
@@ -24,11 +33,20 @@
   (format s "~2@T~W~:@_"(fourth r))
   (format s "~0@TEndIf~:@_"))
 
+(defun infix-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s (format nil "(~~{~~W~~^ ~W ~~})" (first r)) (cdr r)))
+
 (defmacro with-pseudo-pprinter (&rest body)
-  `(unwind-protect
-        (progn
-          (set-pprint-dispatch '(cons (and symbol (eql if)))
-                               (formatter "~/pseudo-print::if-print/"))
-          ,@body)
-     ;; restore original value of pprinter
-     (setq *print-pprint-dispatch* (copy-pprint-dispatch nil))))
+  (let ((orig-tab (gensym)))
+    `(let ((,orig-tab (copy-pprint-dispatch *print-pprint-dispatch*)))
+       (unwind-protect
+            (progn
+              (setq *print-pprint-dispatch* (copy-pprint-dispatch nil))
+              (set-pprint-dispatch '(cons (and symbol (eql if)))
+                                   (formatter "~/pseudo-print::if-print/"))
+              (set-pprint-dispatch '(cons (and symbol (member > < = + - * /)))
+                                   (formatter "~/pseudo-print::infix-print/"))
+              ,@body)
+         ;; restore original value of pprinter
+         (setq *print-pprint-dispatch* ,orig-tab)))))
