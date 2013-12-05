@@ -18,30 +18,17 @@
 
 (defun if-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
-  (pprint-tab :line 1 2 s)
-  (format s "If ~a Then" (second r))
-  (pprint-newline :mandatory s)
-  (pprint-tab :line 3 2 s)
-  (pprint-linear s (third r))
-  (pprint-newline :mandatory s)
-  (pprint-tab :line 1 2 s)
-  (format s "Else")
-  (pprint-newline :mandatory s)
-  (pprint-tab :line 3 2 s)
-  (pprint-linear s (third r))
-  (pprint-newline :mandatory s)
-  (pprint-tab :line 1 2 s)
-  (format s "EndIf")
-  (pprint-newline :mandatory s))
-
-(set-pprint-dispatch
- '(cons (and symbol (eql if)))
- (formatter "~/pseudo-print::if-print/"))
+  (format s "~:@_~0@TIf ~a Then~:@_" (second r))
+  (format s "~2@T~W~:@_"(third r))
+  (format s "~0@TElse~:@_")
+  (format s "~2@T~W~:@_"(fourth r))
+  (format s "~0@TEndIf~:@_"))
 
 (defmacro with-pseudo-pprinter (&rest body)
   `(unwind-protect
         (progn
-          
+          (set-pprint-dispatch '(cons (and symbol (eql if)))
+                               (formatter "~/pseudo-print::if-print/"))
           ,@body)
      ;; restore original value of pprinter
      (setq *print-pprint-dispatch* (copy-pprint-dispatch nil))))
