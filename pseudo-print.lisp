@@ -22,17 +22,18 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (enable-curry-compose-reader-macros))
 
-(defvar pseudo-pprinters nil
-  "List of pseudo-printer functions.")
-
 (defun if-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
-  (format s "~:@_~0@TIf ~a Then~:@_" (second r))
-  (format s "~2@T~W~:@_"(third r))
-  (when (fourth r)
-    (format s "~0@TElse~:@_")
-    (format s "~2@T~W~:@_"(fourth r)))
-  (format s "~0@TEndIf"))
+  (if (fourth r)
+      (format s "~:<If~; ~W Then~:@_~2I~W~-2I~:@_Else~0I~:@_~W~-2I~:@_~;EndIf~:>"
+              (cdr r))
+      (format s "~:<If~; ~W Then~:@_~2I~W~-2I~:@_~;EndIf~:>"
+              (cdr r))))
+
+(defun when-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<Wh~;en ~W Do~:@_~2I~W~-2I~:@_~;EndWhen~:>"
+          (cdr r)))
 
 (defun infix-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
@@ -41,9 +42,9 @@
 (defun defun-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (format s "~:@_~0@TFunction: ~a(~{~a~^, ~})" (second r) (third r))
-  (format s "~2I~{~W~^~:@_~}" (cdddr r)))
+  (format s "~2I~:@_~{~W~^~:@_~}" (cdddr r)))
 
-(defun setf-print (s r colon? atsign?)
+(defun set-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (format s "~{~{~W <- ~W~}~^~:@_~}"
           (loop
@@ -51,20 +52,43 @@
              :for j :from 1 :by 2 :below (length (cdr r))
              :collect (list (nth i (cdr r)) (nth j (cdr r))))))
 
+(defun do-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "Do~:@_")
+  (let ((vars (second r))
+        (until (first (third r)))
+        (to-return (second (third r)))
+        (body (fourth r)))
+    (when vars
+      (format s "TODO VARIABLE INITIALIZATION"))
+    (format s "~2I~W" body)
+    (when until
+      (format s "~:@_Until ~W" until))
+    (when to-return
+      (format s "~:@_~W" to-return))))
+
+(defvar pseudo-pprinters
+  '((:if-print    (cons (and symbol (eql if))))
+    (:when-print  (cons (and symbol (eql when))))
+    (:set-print   (cons (and symbol (member set setq setf))))
+    (:defun-print (cons (and symbol (eql defun))))
+    (:infix-print (cons (and symbol (member > < = + - * /))))
+    (:do-print    (cons (and symbol (eql do)))))
+  "List of pseudo-printer functions.")
+
 (defmacro with-pseudo-pprinter (&rest body)
   (let ((orig-tab (gensym)))
     `(let ((,orig-tab (copy-pprint-dispatch *print-pprint-dispatch*)))
        (unwind-protect
             (progn
               (setq *print-pprint-dispatch* (copy-pprint-dispatch nil))
-              (set-pprint-dispatch '(cons (and symbol (eql if)))
-                                   (formatter "~/pseudo-print::if-print/"))
-              (set-pprint-dispatch '(cons (and symbol (member > < = + - * /)))
-                                   (formatter "~/pseudo-print::infix-print/"))
-              (set-pprint-dispatch '(cons (and symbol (eql defun)))
-                                   (formatter "~/pseudo-print::defun-print/"))
-              (set-pprint-dispatch '(cons (and symbol (eql setf)))
-                                   (formatter "~/pseudo-print::setf-print/"))
+              ,@(mapcar
+                 (lambda (pair)
+                   `(set-pprint-dispatch
+                     ',(second pair)
+                     (formatter ,(format nil "~~/pseudo-print::~a/"
+                                         (symbol-name (first pair))))))
+                 pseudo-pprinters)
               ,@body)
          ;; restore original value of pprinter
          (setq *print-pprint-dispatch* ,orig-tab)))))
