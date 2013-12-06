@@ -64,31 +64,31 @@ href="http://github.com/eschulte/pseudo-print">http://github.com/eschulte/pseudo
 <p>Use `with-pseudo-printer' to print lisp code as pseudo code using
 the normal printing facilities.  E.g.,</p>
 
-<p>PSEUDO-PRINT> (with-pseudo-pprinter
-                  (pprint '(if (> a b) (+ a b c) 3/4)))</p>
+<pre><code>PSEUDO-PRINT&gt; (with-pseudo-pprinter
+                  (pprint '(if (&gt; a b) (+ a b c) 3/4)))
 
-<p>If (A > B) Then
+If (A &gt; B) Then
   (A + B + C)
 Else
   3/4
-EndIf</p>
+EndIf
 
-<p>PSEUDO-PRINT> (with-pseudo-pprinter
+PSEUDO-PRINT&gt; (with-pseudo-pprinter
                   (pprint '(DEFUN EUCLIDS-GCD (A B)
                             (IF (= A 0)
                                 B
                                 (DO ()
                                     ((= B 0) A)
-                                  (IF (> A B)
+                                  (IF (&gt; A B)
                                       (SETF A (- A B))
-                                      (SETF B (- B A))))))))</p>
+                                      (SETF B (- B A))))))))
 
-<p>Function: EUCLIDS-GCD (A, B)
+Function: EUCLIDS-GCD (A, B)
   If (A ≡ 0) Then
     B
   Else
     Do
-      If (A > B) Then
+      If (A &gt; B) Then
         A &lt;- (A - B)
       Else
         B &lt;- (B - A)
@@ -96,7 +96,8 @@ EndIf</p>
     Until (B ≡ 0)
     A
   EndIf
-EndFunction</p>
+EndFunction
+</code></pre>
 
 <p>Customize using the `pseudo-pprinters' variable.</p>
 
