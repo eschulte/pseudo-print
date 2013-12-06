@@ -86,6 +86,11 @@
   (format s "~:<Fu~;nction: ~a (~{~a~^, ~})~:@_~2I~W~-2I~:@_~;EndFunction~:>"
           (cdr r)))
 
+(defun defmacro-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<Ma~;cro: ~a (~{~a~^, ~})~:@_~2I~W~-2I~:@_~;EndMacro~:>"
+          (cdr r)))
+
 (defun set-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (format s "~{~{~W <- ~W~}~^~:@_~}"
@@ -102,9 +107,9 @@
         (body (fourth r)))
     (if until
         (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_Until ~W~;~:>"
-                (list (if vars " TODO VARIABLE INITIALIZATION" "") body until))
+                (list (if vars " TODO: VARIABLE INITIALIZATION" "") body until))
         (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_~;EndDo~:>"
-                (list (if vars " TODO VARIABLE INITIALIZATION" "") body)))
+                (list (if vars " TODO: VARIABLE INITIALIZATION" "") body)))
     (when to-return
       (format s "~:@_~W" to-return))))
 
@@ -164,12 +169,13 @@
     (:when-print  (cons (and symbol (eql when))))
     (:set-print   (cons (and symbol (member set setq setf))))
     (:defun-print (cons (and symbol (eql defun))))
+    (:defmacro-print (cons (and symbol (eql defmacro))))
     (:infix-print
      (cons (and symbol (member > < >= <= = + - * /
                                append equalp equal eql eq))))
     (:do-print    (cons (and symbol (eql do))))
     (:let-print   (cons (and symbol (eql let))))
-    (:flet-print  (cons (and symbol (eql flet))))
+    (:flet-print  (cons (and symbol (member flet labels))))
     (:map-print   (cons (and symbol (member mapc mapcar mapcan))))
     (:list-print  (cons (and symbol (eql list))))
     (:prog1-print (cons (and symbol (eql prog1))))
