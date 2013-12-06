@@ -38,7 +38,6 @@
 ;;       Else
 ;;         B <- (B - A)
 ;;       EndIf
-;;     EndDo
 ;;     Until (B = 0)
 ;;     A
 ;;   EndIf
@@ -90,10 +89,11 @@
         (until (first (third r)))
         (to-return (second (third r)))
         (body (fourth r)))
-    (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_~;EndDo~:>"
-            (list (if vars " TODO VARIABLE INITIALIZATION" "") body))
-    (when until
-      (format s "~:@_Until ~W" until))
+    (if until
+        (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_Until ~W~;~:>"
+                (list (if vars " TODO VARIABLE INITIALIZATION" "") body until))
+        (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_~;EndDo~:>"
+                (list (if vars " TODO VARIABLE INITIALIZATION" "") body)))
     (when to-return
       (format s "~:@_~W" to-return))))
 
