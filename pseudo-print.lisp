@@ -9,39 +9,39 @@
 ;; Use `with-pseudo-printer' to print lisp code as pseudo code using
 ;; the normal printing facilities.  E.g.,
 ;;
-;; PSEUDO-PRINT> (with-pseudo-pprinter
-;;                   (pprint '(if (> a b) (+ a b c) 3/4)))
-;;
-;; If (A > B) Then
-;;   (A + B + C)
-;; Else
-;;   3/4
-;; EndIf
-;;
-;; PSEUDO-PRINT> (with-pseudo-pprinter
-;;                   (pprint '(DEFUN EUCLIDS-GCD (A B)
-;;                             (IF (= A 0)
-;;                                 B
-;;                                 (DO ()
-;;                                     ((= B 0) A)
-;;                                   (IF (> A B)
-;;                                       (SETF A (- A B))
-;;                                       (SETF B (- B A))))))))
-;;
-;; Function: EUCLIDS-GCD (A, B)
-;;   If (A ≡ 0) Then
-;;     B
-;;   Else
-;;     Do
-;;       If (A > B) Then
-;;         A <- (A - B)
+;;     PSEUDO-PRINT> (with-pseudo-pprinter
+;;                       (pprint '(if (> a b) (+ a b c) 3/4)))
+;;     
+;;     If (A > B) Then
+;;       (A + B + C)
+;;     Else
+;;       3/4
+;;     EndIf
+;;     
+;;     PSEUDO-PRINT> (with-pseudo-pprinter
+;;                       (pprint '(DEFUN EUCLIDS-GCD (A B)
+;;                                 (IF (= A 0)
+;;                                     B
+;;                                     (DO ()
+;;                                         ((= B 0) A)
+;;                                       (IF (> A B)
+;;                                           (SETF A (- A B))
+;;                                           (SETF B (- B A))))))))
+;;     
+;;     Function: EUCLIDS-GCD (A, B)
+;;       If (A ≡ 0) Then
+;;         B
 ;;       Else
-;;         B <- (B - A)
+;;         Do
+;;           If (A > B) Then
+;;             A <- (A - B)
+;;           Else
+;;             B <- (B - A)
+;;           EndIf
+;;         Until (B ≡ 0)
+;;         A
 ;;       EndIf
-;;     Until (B ≡ 0)
-;;     A
-;;   EndIf
-;; EndFunction
+;;     EndFunction
 ;;
 ;; Customize using the `pseudo-pprinters' variable.
 ;;
