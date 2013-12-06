@@ -115,6 +115,22 @@
   (declare (ignorable colon? atsign?))
   (format s (format nil "~~{~~W~~^ ~a ~~}" "++") (cdr r)))
 
+(defun map-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (let ((collection-word (case (car r)
+                           (mapc "Do")
+                           (mapcar "Collect")
+                           (mapcan "Append"))))
+    (if (listp (second (second r)))
+        (format s "~:<Fo~;r ~{~W~^, ~} in ~W ~a ~:_~
+                      ~2I~{~W~^ ~_~} ~_~-2I~;EndFor~:>"
+                (list (second (second r))
+                      (third r)
+                      collection-word
+                      (cddr (second r))))
+        (format s "~:<Fo~;r place in ~W ~a ~:_~2I~W(place) ~_~-2I~;EndFor~:>"
+                (list (third r) collection-word (second r))))))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
@@ -124,7 +140,8 @@
     (:do-print    (cons (and symbol (eql do))))
     (:let-print   (cons (and symbol (eql let))))
     (:flet-print  (cons (and symbol (eql flet))))
-    (:append-print (cons (and symbol (eql append)))))
+    (:append-print (cons (and symbol (eql append))))
+    (:map-print   (cons (and symbol (member mapc mapcar mapcan)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
