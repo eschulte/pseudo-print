@@ -164,6 +164,10 @@
   (format s "~:<~;Let~^ ~W <- ~W in~1I~@{~^ ~_~W~}~;~:>"
           (cdr r)))
 
+(defun generic-function-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<~;~W(~{~W~^, ~})~;~:>" (list (car r) (cdr r))))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
