@@ -118,7 +118,9 @@
   (declare (ignorable colon? atsign?))
   (format s "~:<~;let~^ ~:<~;~@{~:<~;~@{~W~^ <- ~_~}~;~:>~^, ~:_~}~; in~:>~
                 ~1I~@{~^ ~_~W~}~;~:>"
-          (cons (mapcar (lambda (f) (list (car f) (append (list 'defun (car f)) (cdr f)))) (cadr r))
+          (cons (mapcar (lambda (f)
+                          (list (car f) (append (list 'defun (car f)) (cdr f)))
+                          ) (cadr r))
                 (cddr r))))
 
 (defun map-print (s r colon? atsign?)
@@ -127,15 +129,17 @@
                            (mapc "Do")
                            (mapcar "Collect")
                            (mapcan "Append"))))
-    (if (listp (second (second r)))
-        (format s "~:<Fo~;r ~{~W~^, ~} in ~W ~a ~:_~
-                      ~2I~{~W~^ ~_~} ~_~-2I~;EndFor~:>"
+    (format s "~:<Fo~;r ~{~W~^, ~} in ~W ~a ~:_~
+                      ~2I~{~W~^ ~_~} ~-2I~_~;EndFor~:>"
+            (if (listp (second (second r)))
                 (list (second (second r))
                       (third r)
                       collection-word
-                      (cddr (second r))))
-        (format s "~:<Fo~;r place in ~W ~a ~:_~2I~W(place) ~_~-2I~;EndFor~:>"
-                (list (third r) collection-word (second r))))))
+                      (cddr (second r)))
+                (list (list 'element)
+                      (third r)
+                      collection-word
+                      (list (list (second (second r)) 'element)))))))
 
 (defun list-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
@@ -149,6 +153,11 @@
 (defun loop-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (format s "~:<Lo~;op ~2I~@{~W~^ ~_~}~-2I~@:_~;EndLoop~:>" (cdr r)))
+
+(defun destructuring-bind-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<~;Let~^ ~W <- ~W in~1I~@{~^ ~_~W~}~;~:>"
+          (cdr r)))
 
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
@@ -164,7 +173,8 @@
     (:map-print   (cons (and symbol (member mapc mapcar mapcan))))
     (:list-print  (cons (and symbol (eql list))))
     (:prog1-print (cons (and symbol (eql prog1))))
-    (:loop-print  (cons (and symbol (eql loop)))))
+    (:loop-print  (cons (and symbol (eql loop))))
+    (:destructuring-bind-print (cons (and symbol (eql destructuring-bind)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
