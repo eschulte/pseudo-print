@@ -103,6 +103,10 @@
                 ~1I~@{~^ ~_~W~}~;~:>"
           r))
 
+(defun append-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s (format nil "~~{~~W~~^ ~a ~~}" "++") (cdr r)))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
@@ -110,7 +114,8 @@
     (:defun-print (cons (and symbol (eql defun))))
     (:infix-print (cons (and symbol (member > < = + - * /))))
     (:do-print    (cons (and symbol (eql do))))
-    (:let-print   (cons (and symbol (eql let)))))
+    (:let-print   (cons (and symbol (eql let))))
+    (:append-print (cons (and symbol (eql append)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
