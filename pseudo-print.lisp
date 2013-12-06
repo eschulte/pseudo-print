@@ -45,6 +45,8 @@
 ;; EndFunction
 ;;
 ;; Customize using the `pseudo-pprinters' variable.
+;;
+;; see http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html
 
 ;;; Code:
 (in-package :pseudo-print)
@@ -54,8 +56,8 @@
 (defun if-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (if (fourth r)
-      (format s
-              "~:<If~; ~W Then~:@_~2I~W~-2I~:@_Else~0I~:@_~W~-2I~:@_~;EndIf~:>"
+      (format s "~:<If~; ~W Then~:@_~2I~W~-2I~
+                    ~:@_Else~0I~:@_~W~-2I~:@_~;EndIf~:>"
               (cdr r))
       (format s "~:<If~; ~W Then~:@_~2I~W~-2I~:@_~;EndIf~:>"
               (cdr r))))
@@ -95,13 +97,20 @@
     (when to-return
       (format s "~:@_~W" to-return))))
 
+(defun let-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<~;~W~^ ~:<~;~@{~:<~;~@{~W~^ <- ~_~}~;~:>~^, ~:_~}~; in~:>~
+                ~1I~@{~^ ~_~W~}~;~:>"
+          r))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
     (:set-print   (cons (and symbol (member set setq setf))))
     (:defun-print (cons (and symbol (eql defun))))
     (:infix-print (cons (and symbol (member > < = + - * /))))
-    (:do-print    (cons (and symbol (eql do)))))
+    (:do-print    (cons (and symbol (eql do))))
+    (:let-print   (cons (and symbol (eql let)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
