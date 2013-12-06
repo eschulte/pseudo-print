@@ -9,13 +9,40 @@
 ;; Use `with-pseudo-printer' to print lisp code as pseudo code using
 ;; the normal printing facilities.  E.g.,
 ;;
-;; > (with-pseudo-pprinter (format t "~W" '(if (> x 0) (+ 1 2 3) 3/4)))
+;; PSEUDO-PRINT> (with-pseudo-pprinter
+;;                   (pprint '(if (> a b) (+ a b c) 3/4)))
 ;;
-;; If (X > 0) Then
-;;   (1 + 2 + 3)
+;; If (A > B) Then
+;;   (A + B + C)
 ;; Else
 ;;   3/4
 ;; EndIf
+;;
+;; PSEUDO-PRINT> (with-pseudo-pprinter
+;;                   (pprint '(DEFUN EUCLIDS-GCD (A B)
+;;                             (IF (= A 0)
+;;                                 B
+;;                                 (DO ()
+;;                                     ((= B 0) A)
+;;                                   (IF (> A B)
+;;                                       (SETF A (- A B))
+;;                                       (SETF B (- B A))))))))
+;;
+;; Function: EUCLIDS-GCD (A, B)
+;;   If (A = 0) Then
+;;     B
+;;   Else
+;;     Do
+;;       If (A > B) Then
+;;         A <- (A - B)
+;;       Else
+;;         B <- (B - A)
+;;       EndIf
+;;     EndDo
+;;     Until (B = 0)
+;;     A
+;;   EndIf
+;; EndFunction
 
 ;;; Code:
 (in-package :pseudo-print)
@@ -25,7 +52,8 @@
 (defun if-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (if (fourth r)
-      (format s "~:<If~; ~W Then~:@_~2I~W~-2I~:@_Else~0I~:@_~W~-2I~:@_~;EndIf~:>"
+      (format s
+              "~:<If~; ~W Then~:@_~2I~W~-2I~:@_Else~0I~:@_~W~-2I~:@_~;EndIf~:>"
               (cdr r))
       (format s "~:<If~; ~W Then~:@_~2I~W~-2I~:@_~;EndIf~:>"
               (cdr r))))
@@ -41,8 +69,8 @@
 
 (defun defun-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
-  (format s "~:@_~0@TFunction: ~a(~{~a~^, ~})" (second r) (third r))
-  (format s "~2I~:@_~{~W~^~:@_~}" (cdddr r)))
+  (format s "~:<Fu~;nction: ~a (~{~a~^, ~})~:@_~2I~W~-2I~:@_~;EndFunction~:>"
+          (cdr r)))
 
 (defun set-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
@@ -54,14 +82,12 @@
 
 (defun do-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
-  (format s "Do~:@_")
   (let ((vars (second r))
         (until (first (third r)))
         (to-return (second (third r)))
         (body (fourth r)))
-    (when vars
-      (format s "TODO VARIABLE INITIALIZATION"))
-    (format s "~2I~W" body)
+    (format s "~:<Do~;~a ~:@_~2I~W~-2I~:@_~;EndDo~:>"
+            (list (if vars " TODO VARIABLE INITIALIZATION" "") body))
     (when until
       (format s "~:@_Until ~W" until))
     (when to-return
