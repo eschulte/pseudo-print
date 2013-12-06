@@ -67,9 +67,19 @@
   (format s "~:<Wh~;en ~W Do~:@_~2I~W~-2I~:@_~;EndWhen~:>"
           (cdr r)))
 
+(defvar infix-translations '((equalp . "≡")
+                             (equal . "≡")
+                             (eql . "≡")
+                             (eq . "≡")
+                             (append . "++"))
+  "Alist used to hold different names for infix functions.")
+
 (defun infix-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
-  (format s (format nil "(~~{~~W~~^ ~W ~~})" (first r)) (cdr r)))
+  (format s (format nil "~~{~~W~~^ ~a ~~}"
+                    (or (cdr (assoc (first r) infix-translations))
+                        (first r)))
+          (cdr r)))
 
 (defun defun-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
@@ -108,12 +118,8 @@
   (declare (ignorable colon? atsign?))
   (format s "~:<~;let~^ ~:<~;~@{~:<~;~@{~W~^ <- ~_~}~;~:>~^, ~:_~}~; in~:>~
                 ~1I~@{~^ ~_~W~}~;~:>"
-          (cons (mapcar (lambda (f) (list (car f) (cons 'lambda (cdr f)))) (cadr r))
+          (cons (mapcar (lambda (f) (list (car f) (cons 'λ (cdr f)))) (cadr r))
                 (cddr r))))
-
-(defun append-print (s r colon? atsign?)
-  (declare (ignorable colon? atsign?))
-  (format s (format nil "~~{~~W~~^ ~a ~~}" "++") (cdr r)))
 
 (defun map-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
@@ -131,17 +137,23 @@
         (format s "~:<Fo~;r place in ~W ~a ~:_~2I~W(place) ~_~-2I~;EndFor~:>"
                 (list (third r) collection-word (second r))))))
 
+(defun list-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "[~{~W~^, ~_~}]~_" (cdr r)))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
     (:set-print   (cons (and symbol (member set setq setf))))
     (:defun-print (cons (and symbol (eql defun))))
-    (:infix-print (cons (and symbol (member > < = + - * /))))
+    (:infix-print
+     (cons (and symbol (member > < >= <= = + - * /
+                               append equalp equal eql eq))))
     (:do-print    (cons (and symbol (eql do))))
     (:let-print   (cons (and symbol (eql let))))
     (:flet-print  (cons (and symbol (eql flet))))
-    (:append-print (cons (and symbol (eql append))))
-    (:map-print   (cons (and symbol (member mapc mapcar mapcan)))))
+    (:map-print   (cons (and symbol (member mapc mapcar mapcan))))
+    (:list-print  (cons (and symbol (eql list)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
