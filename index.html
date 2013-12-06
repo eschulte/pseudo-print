@@ -1,0 +1,130 @@
+<html> 
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>PSEUDO-PRINT - print lisp as pseudo-code</title>
+  <style type="text/css">
+  pre { padding:5px; background-color:#e0e0e0 }
+  h3, h4 { text-decoration: underline; }
+  a { text-decoration: none; padding: 1px 2px 1px 2px; }
+  a:visited { text-decoration: none; padding: 1px 2px 1px 2px; }
+  a:hover { text-decoration: none; padding: 1px 1px 1px 1px; border: 1px solid #000000; } 
+  a:focus { text-decoration: none; padding: 1px 2px 1px 2px; border: none; }
+  a.none { text-decoration: none; padding: 0; }
+  a.none:visited { text-decoration: none; padding: 0; } 
+  a.none:hover { text-decoration: none; border: none; padding: 0; } 
+  a.none:focus { text-decoration: none; border: none; padding: 0; } 
+  a.noborder { text-decoration: none; padding: 0; } 
+  a.noborder:visited { text-decoration: none; padding: 0; } 
+  a.noborder:hover { text-decoration: none; border: none; padding: 0; } 
+  a.noborder:focus { text-decoration: none; border: none; padding: 0; }  
+  pre.none { padding:5px; background-color:#ffffff }
+  </style>
+</head>
+
+<body bgcolor=white>
+
+<h2> PSEUDO-PRINT - print lisp as pseudo-code</h2>
+
+<br>&nbsp;<br><h3><a name=abstract class=none>Abstract</a></h3>
+
+<p>The PSEUDO-PRINT library uses the Common Lisp's pretty printing
+facilities to print pseudo code instead of lisp code.  It relies
+heavily on the use of format strings.  See <a
+href="http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html">cltl</a>
+for a great reference on Common Lisp's pretty printer, and for more
+information on this library including examples see <a
+href="http://eschulte.github.com/pseudo-print">PSEUDO-PRINT</a>.</p>
+
+The code is available under the <a
+href="http://www.gnu.org/licenses/gpl-3.0.html">GNU General Public License</a>.
+
+<p>
+<font color=red>Source:</font>
+<a href="http://github.com/eschulte/pseudo-print">http://github.com/eschulte/pseudo-print</a>.
+
+<br>&nbsp;<br><h3><a class=none name="contents">Contents</a></h3>
+<ol>
+  <li><a href="#source">Source</a></li>
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#dictionary">The PSEUDO-PRINT dictionary</a></li>
+    <ol>
+      <li><a href="#pseudo-pprinters"><code>pseudo-pprinters</code></a></li>
+    </ol>
+  <li><a href="#ack">Acknowledgements</a></li>
+</ol>
+
+<br>&nbsp;<br><h3><a class=none name="source">Source</a></h3>
+
+PSEUDO-PRINT together with this documentation can be found at <a
+href="http://github.com/eschulte/pseudo-print">http://github.com/eschulte/pseudo-print</a>.
+
+<br>&nbsp;<br><h3><a class=none name="introduction">Introduction</a></h3>
+
+<p>Use `with-pseudo-printer' to print lisp code as pseudo code using
+the normal printing facilities.  E.g.,</p>
+
+<p>PSEUDO-PRINT> (with-pseudo-pprinter
+                  (pprint '(if (> a b) (+ a b c) 3/4)))</p>
+
+<p>If (A > B) Then
+  (A + B + C)
+Else
+  3/4
+EndIf</p>
+
+<p>PSEUDO-PRINT> (with-pseudo-pprinter
+                  (pprint '(DEFUN EUCLIDS-GCD (A B)
+                            (IF (= A 0)
+                                B
+                                (DO ()
+                                    ((= B 0) A)
+                                  (IF (> A B)
+                                      (SETF A (- A B))
+                                      (SETF B (- B A))))))))</p>
+
+<p>Function: EUCLIDS-GCD (A, B)
+  If (A ≡ 0) Then
+    B
+  Else
+    Do
+      If (A > B) Then
+        A &lt;- (A - B)
+      Else
+        B &lt;- (B - A)
+      EndIf
+    Until (B ≡ 0)
+    A
+  EndIf
+EndFunction</p>
+
+<p>Customize using the `pseudo-pprinters' variable.</p>
+
+<p>see http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html</p>
+
+<br>&nbsp;<br><h3><a class=none name="dictionary">The PSEUDO-PRINT dictionary</a></h3>
+
+
+<!-- Entry for PSEUDO-PPRINTERS -->
+
+<p><br>[Special variable]<br><a class=none name='pseudo-pprinters'><b>pseudo-pprinters</b></a>
+<blockquote><br>
+
+List of pseudo-printer functions.
+
+
+
+
+</blockquote>
+
+<!-- End of entry for PSEUDO-PPRINTERS -->
+
+
+<br>&nbsp;<br><h3><a class=none name="ack">Acknowledgements</a></h3>
+
+<p>
+This documentation was prepared with a hacked up version of <a href="http://weitz.de/documentation-template/">DOCUMENTATION-TEMPLATE</a>.
+</p>
+
+</body>
+</html>
