@@ -29,7 +29,7 @@
 ;;                                       (SETF B (- B A))))))))
 ;;
 ;; Function: EUCLIDS-GCD (A, B)
-;;   If (A = 0) Then
+;;   If (A ≡ 0) Then
 ;;     B
 ;;   Else
 ;;     Do
@@ -38,7 +38,7 @@
 ;;       Else
 ;;         B <- (B - A)
 ;;       EndIf
-;;     Until (B = 0)
+;;     Until (B ≡ 0)
 ;;     A
 ;;   EndIf
 ;; EndFunction
@@ -71,6 +71,7 @@
                              (equal . "≡")
                              (eql . "≡")
                              (eq . "≡")
+                             (= . "≡")
                              (append . "++"))
   "Alist used to hold different names for infix functions.")
 
