@@ -1,0 +1,13 @@
+                                                           -*- org -*-
+
+* Tasks [0/4]
+** TODO non-prefix all unknown functions
+** TODO access fields with =.field= notation
+* Forms [0/7]
+** TODO defvar
+** TODO All Maps
+** TODO let
+** TODO flet
+** TODO loop
+** TODO with-slots
+** TODO make-instance
