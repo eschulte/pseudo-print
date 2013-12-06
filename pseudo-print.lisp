@@ -118,7 +118,7 @@
   (declare (ignorable colon? atsign?))
   (format s "~:<~;let~^ ~:<~;~@{~:<~;~@{~W~^ <- ~_~}~;~:>~^, ~:_~}~; in~:>~
                 ~1I~@{~^ ~_~W~}~;~:>"
-          (cons (mapcar (lambda (f) (list (car f) (cons 'λ (cdr f)))) (cadr r))
+          (cons (mapcar (lambda (f) (list (car f) (append (list 'defun (car f)) (cdr f)))) (cadr r))
                 (cddr r))))
 
 (defun map-print (s r colon? atsign?)
@@ -141,6 +141,15 @@
   (declare (ignorable colon? atsign?))
   (format s "[~{~W~^, ~_~}]~_" (cdr r)))
 
+(defun prog1-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<Re~;turn ~W After~:@_~2I~@{~W~^ ~_~}~-2I~@:_~;EndAfter~:>"
+          (cdr r)))
+
+(defun loop-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<Lo~;op ~2I~@{~W~^ ~_~}~-2I~@:_~;EndLoop~:>" (cdr r)))
+
 (defvar pseudo-pprinters
   '((:if-print    (cons (and symbol (eql if))))
     (:when-print  (cons (and symbol (eql when))))
@@ -153,7 +162,9 @@
     (:let-print   (cons (and symbol (eql let))))
     (:flet-print  (cons (and symbol (eql flet))))
     (:map-print   (cons (and symbol (member mapc mapcar mapcan))))
-    (:list-print  (cons (and symbol (eql list)))))
+    (:list-print  (cons (and symbol (eql list))))
+    (:prog1-print (cons (and symbol (eql prog1))))
+    (:loop-print  (cons (and symbol (eql loop)))))
   "List of pseudo-printer functions.")
 
 (defmacro with-pseudo-pprinter (&rest body)
