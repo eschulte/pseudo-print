@@ -1,0 +1,14 @@
+PSEUDO-PRINT --- print lisp as pseudo-code
+
+The PSEUDO-PRINT library uses the Common Lisp's pretty printing
+facilities to print pseudo code instead of lisp code.  It relies
+heavily on the use of format strings.  See [1] for a great reference
+on Common Lisp's pretty printer, and for more information on this
+library including examples see [2].
+
+Note: This library is early days, and many common macros and functions
+      are not yet supported.  Patches welcome.
+
+[1]  http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html
+
+[2]  http://eschulte.github.com/pseudo-print
