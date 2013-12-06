@@ -3,11 +3,11 @@
 * Tasks [0/4]
 ** TODO non-prefix all unknown functions
 ** TODO access fields with =.field= notation
-* Forms [1/7]
+* Forms [2/7]
 ** TODO defvar
 ** TODO All Maps
 ** DONE let
-** TODO flet
+** DONE flet
 ** TODO loop
 ** TODO with-slots
 ** TODO make-instance

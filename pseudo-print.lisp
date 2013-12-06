@@ -47,6 +47,7 @@
 ;;
 ;; see http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html
 
+
 ;;; Code:
 (in-package :pseudo-print)
 (eval-when (:compile-toplevel :load-toplevel :execute)
@@ -103,6 +104,13 @@
                 ~1I~@{~^ ~_~W~}~;~:>"
           r))
 
+(defun flet-print (s r colon? atsign?)
+  (declare (ignorable colon? atsign?))
+  (format s "~:<~;let~^ ~:<~;~@{~:<~;~@{~W~^ <- ~_~}~;~:>~^, ~:_~}~; in~:>~
+                ~1I~@{~^ ~_~W~}~;~:>"
+          (cons (mapcar (lambda (f) (list (car f) (cons 'lambda (cdr f)))) (cadr r))
+                (cddr r))))
+
 (defun append-print (s r colon? atsign?)
   (declare (ignorable colon? atsign?))
   (format s (format nil "~~{~~W~~^ ~a ~~}" "++") (cdr r)))
@@ -115,6 +123,7 @@
     (:infix-print (cons (and symbol (member > < = + - * /))))
     (:do-print    (cons (and symbol (eql do))))
     (:let-print   (cons (and symbol (eql let))))
+    (:flet-print  (cons (and symbol (eql flet))))
     (:append-print (cons (and symbol (eql append)))))
   "List of pseudo-printer functions.")
 
