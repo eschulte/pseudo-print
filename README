@@ -1,4 +1,5 @@
-PSEUDO-PRINT --- print lisp as pseudo-code
+                             PSEUDO-PRINT
+                      print lisp as pseudo-code
 
 The PSEUDO-PRINT library uses the Common Lisp's pretty printing
 facilities to print pseudo code instead of lisp code.  It relies
