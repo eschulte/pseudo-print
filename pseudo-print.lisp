@@ -43,6 +43,8 @@
 ;;     A
 ;;   EndIf
 ;; EndFunction
+;;
+;; Customize using the `pseudo-pprinters' variable.
 
 ;;; Code:
 (in-package :pseudo-print)
