@@ -15,13 +15,16 @@
 
 (defvar *abstracts*
   '((:pseudo-print .
-     "The PSEUDO-PRINT library uses the Common Lisp's pretty printing
+     "<p>The PSEUDO-PRINT library uses the Common Lisp's pretty printing
 facilities to print pseudo code instead of lisp code.  It relies
 heavily on the use of format strings.  See <a
 href=\"http://www.cs.cmu.edu/Groups/AI/html/cltl/clm/node253.html\">cltl</a>
 for a great reference on Common Lisp's pretty printer, and for more
 information on this library including examples see <a
-href=\"http://eschulte.github.com/pseudo-print\">PSEUDO-PRINT</a>.")))
+href=\"http://eschulte.github.com/pseudo-print\">PSEUDO-PRINT</a>.</p>
+
+<p><b>Note</b>: This library is early days, and many common macros and
+functions are not yet supported.  Patches welcome.  </p>")))
 
 (schulte-documentation-template:create-template *pkg*
  :maybe-skip-methods-p t
